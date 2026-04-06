@@ -662,7 +662,7 @@ export default function App() {
     (async () => {
       try {
         const url =
-          "https://docs.google.com/spreadsheets/d/e/2PACX-1vRMYlJvBw-7oHxTO-ID3O7lT9KjQpLDsrb9hnmMPNxYsjriuvlly9oMfSESS7AxCQ/pub?output=csv";
+          "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIMml-KZ5oul-nIZxmNfSfOhdOJEOF9IoYmvcQpXplFC7jOt7a1UnwRlVQBKF9mA/pub?output=xlsx";
         const resp = await fetch(url);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const text = await resp.text();
