@@ -609,15 +609,13 @@ function AITab({ data, periodIdx }) {
     const prompt = `Tu es un analyste e-commerce expert. Voici les KPIs de la période "${current._week || current._period || current._month || `Période ${periodIdx + 1}`}" :\n\n${JSON.stringify(current, null, 2)}\n\n${previous ? `Période précédente :\n${JSON.stringify(previous, null, 2)}\n\n` : ""}Fais une analyse courte et percutante en français :\n1. Points forts (max 3)\n2. Alertes (max 3)\n3. Actions recommandées (max 3)\n\nSois concis, utilise des emojis, et donne des chiffres précis.`;
 
     try {
-      const resp = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [{ role: "user", content: prompt }],
-        }),
-      });
+    const res = await fetch("/api/analyze", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    messages: [{ role: "user", content: prompt }],
+  }),
+});
       const json = await resp.json();
       const text = json.content?.map((b) => b.text || "").join("\n") || "Pas de réponse.";
       setResult(text);
