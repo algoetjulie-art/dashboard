@@ -8,8 +8,9 @@ import {
 const SHEET_HEBDO   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8ZciJQped1l4159ntQZeBO8nRQQ8CCWCITj6_WT-7sLW7Y03eesAEPJdO394UJQ/pub?gid=1653386731&single=true&output=csv";
 const SHEET_MENSUEL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8ZciJQped1l4159ntQZeBO8nRQQ8CCWCITj6_WT-7sLW7Y03eesAEPJdO394UJQ/pub?gid=719176496&single=true&output=csv";
 function sheetUrl(mode) {
-  const base = mode === "hebdo" ? SHEET_HEBDO : SHEET_MENSUEL;
-  return `https://api.allorigins.win/raw?url=${encodeURIComponent(base)}`;
+  // Appel à la Vercel Serverless Function /api/sheet
+  // qui fetch Google Sheets côté serveur sans problème CORS
+  return `/api/sheet?mode=${mode}`;
 }
 
 // ─── STRUCTURE DU SHEET ────────────────────────────────────────────────────
