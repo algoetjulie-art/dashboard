@@ -8,9 +8,9 @@ import {
 const SHEET_HEBDO   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8ZciJQped1l4159ntQZeBO8nRQQ8CCWCITj6_WT-7sLW7Y03eesAEPJdO394UJQ/pub?gid=1653386731&single=true&output=csv";
 const SHEET_MENSUEL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8ZciJQped1l4159ntQZeBO8nRQQ8CCWCITj6_WT-7sLW7Y03eesAEPJdO394UJQ/pub?gid=719176496&single=true&output=csv";
 function sheetUrl(mode) {
-  // Appel à la Vercel Serverless Function /api/sheet
-  // qui fetch Google Sheets côté serveur sans problème CORS
-  return `/api/sheet?mode=${mode}`;
+  return mode === "hebdo"
+    ? "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8ZciJQped1l4159ntQZeBO8nRQQ8CCWCITj6_WT-7sLW7Y03eesAEPJdO394UJQ/pub?gid=1653386731&single=true&output=csv"
+    : "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8ZciJQped1l4159ntQZeBO8nRQQ8CCWCITj6_WT-7sLW7Y03eesAEPJdO394UJQ/pub?gid=719176496&single=true&output=csv";
 }
 
 // ─── STRUCTURE DU SHEET ────────────────────────────────────────────────────
@@ -440,9 +440,20 @@ export default function App() {
   const fetchSheet = useCallback(async () => {
     setLoading(true); setError("");
     try {
-      const res = await fetch(sheetUrl(periodMode));
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const text = await res.text();
+      // Tentative 1 : fetch direct (fonctionne si Google autorise)
+      let text = "";
+      try {
+        const res = await fetch(sheetUrl(periodMode));
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        text = await res.text();
+      } catch {
+        // Tentative 2 : via allorigins
+        const fallback = await fetch(
+          `https://api.allorigins.win/raw?url=${encodeURIComponent(sheetUrl(periodMode))}`
+        );
+        if (!fallback.ok) throw new Error(`HTTP ${fallback.status}`);
+        text = await fallback.text();
+      }
       const rows = parseCSVToRows(text);
 
       // Nom client depuis row 1 : "Boutique e-commerce · Données de démo" → on prend row 0
